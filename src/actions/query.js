@@ -1,6 +1,6 @@
 import { actionTypes } from '../constants'
 import { promisesForPopulate } from '../utils/populate'
-import { forEach, size } from 'lodash'
+import { forEach, size, isObject } from 'lodash'
 import {
   applyParamsToQuery,
   getWatcherCount,
@@ -142,15 +142,28 @@ export const watchEvent = (firebase, dispatch, { type, path, populates, queryPar
             requesting: false,
             requested: true
           })
-          forEach(results, (result, path) => {
-            dispatch({
-              type: SET,
-              path,
-              data: result,
-              timestamp: Date.now(),
-              requesting: false,
-              requested: true
-            })
+          forEach(results, (result, root) => {
+            if (isObject(result)) {
+              forEach(result, (obj, key) => {
+                dispatch({
+                  type: SET,
+                  path: `${root}/${key}`,
+                  data: obj,
+                  timestamp: Date.now(),
+                  requesting: false,
+                  requested: true
+                })
+              })
+            } else {
+              dispatch({
+                type: SET,
+                path: root,
+                data: result,
+                timestamp: Date.now(),
+                requesting: false,
+                requested: true
+              })
+            }
           })
         })
     }, (err) => {
