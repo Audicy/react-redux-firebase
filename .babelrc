@@ -1,5 +1,5 @@
 {
-  "presets": ["es2015", "stage-1", "react"],
+  "presets": ["react-native"],
   "plugins": [
     "es6-promise",
     "add-module-exports",
