@@ -111,10 +111,20 @@ export const watchEvent = (firebase, dispatch, { type, path, populates, queryPar
         const ordered = []
         // preserve order of children under ordered
         if (e === 'child_added') {
-          ordered.push({ key: snapshot.key, ...snapshot.val() })
+          const value = snapshot.val();
+          if (isObject(value)) {
+            ordered.push({ key: snapshot.key, ...snapshot.val() })
+          } else {
+            ordered.push({ key: snapshot.key, value })
+          }
         } else {
           snapshot.forEach((child) => {
-            ordered.push({ key: child.key, ...child.val() })
+            const value = child.val();
+            if (isObject(value)) {
+              ordered.push({ key: child.key, ...child.val() })
+            } else {
+              ordered.push({ key: child.key, value })
+            }
           })
         }
 
